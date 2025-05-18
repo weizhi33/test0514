@@ -43,7 +43,7 @@ training001 = my_image.sample(
     }
 )
 n_clusters = 7
-clusterer_wekaKMeans = ee.Clusterer.wekaKMeans(nClusters=n_clusters).train(training001)
+clusterer_wekaKMeans = ee.Clusterer.wekaKMeans(n_clusters).train(training001)
 result001 = my_image.cluster(clusterer_wekaKMeans)
 legend_dict = {
      'A': '#10d22c',
@@ -55,10 +55,10 @@ legend_dict = {
     'G': '#868686'
 }
 palette = list(legend_dict.values())
-vis_params_001 = {'min': 0, 'max': 4, 'palette': palette}
+vis_params_001 = {'min': 0, 'max': 6, 'palette': palette}
 
 Map = geemap.Map(center=[24.081653403304525, 120.5583462887228 ], zoom=9)
-left_layer = geemap.ee_tile_layer(image, vis_params, "Sentinel-2")
+left_layer = geemap.ee_tile_layer(my_image, vis_params, "Sentinel-2")
 right_layer = geemap.ee_tile_layer(result001, vis_params_001, "KMeans clustered land cover")
 Map.split_map(left_layer, right_layer)
 Map.add_legend(title='Land Cover Cluster (KMeans)', legend_dict=legend_dict, draggable=False, position='bottomright')
