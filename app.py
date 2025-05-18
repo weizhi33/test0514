@@ -26,15 +26,12 @@ point = ee.Geometry.Point([120.5583462887228, 24.081653403304525])
 
 # 擷取 Landsat 
 my_image = (
-    ee.ImageCollection('COPERNICUS/S2_HARMONIZED')
-    .filterBounds(my_point)
-    .filterDate('2021-01-01', '2022-01-01')
-    .sort('CLOUDY_PIXEL_PERCENTAGE')
-    .first()
+    ee.ImageCollection('COPERNICUS/S2_HARMONIZED')\
+    .filterBounds(my_point)\
+    .filterDate('2021-01-01', '2022-01-01')\
+    .sort('CLOUDY_PIXEL_PERCENTAGE')\
+    .first()\
     .select('B.*')
-)
-
-
 vis_params = {'min':100, 'max': 3500, 'bands': ['B11',  'B8',  'B3']}
 
 training001 = my_image.sample(
