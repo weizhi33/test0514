@@ -42,7 +42,7 @@ training001 = my_image.sample(
         'geometries': True,  # 設為False表示取樣輸出的點將忽略其幾何屬性(即所屬網格的中心點)，無法作為圖層顯示，可節省記憶體。
     }
 )
-n_clusters = 11
+n_clusters = 7
 clusterer_wekaKMeans = ee.Clusterer.wekaKMeans(nClusters=n_clusters).train(training001)
 result001 = my_image.cluster(clusterer_wekaKMeans)
 legend_dict = {
