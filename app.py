@@ -43,7 +43,7 @@ training001 = my_image.sample(
     }
 )
 n_clusters = 11
-clusterer_wekaKMeans = ee.Clusterer.wekaKMeans().train(training001)
+clusterer_wekaKMeans = ee.Clusterer.wekaKMeans(nClusters=n_clusters).train(training001)
 result001 = my_image.cluster(clusterer_wekaKMeans)
 legend_dict = {
      'A': '#10d22c',
