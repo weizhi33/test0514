@@ -22,17 +22,48 @@ st.title("🌍 使用服務帳戶連接 GEE 的 Streamlit App")
 
 
 # 地理區域
-point = ee.Geometry.Point([121.56, 25.03])
+point = ee.Geometry.Point([120.5583462887228, 24.081653403304525])
 
-# 擷取 Landsat NDVI
-image = ee.ImageCollection("LANDSAT/LC09/C02/T1_L2") \
-    .filterBounds(point) \
-    .filterDate("2022-01-01", "2022-12-31") \
-    .median()
+# 擷取 Landsat 
+my_image = (
+    ee.ImageCollection('COPERNICUS/S2_HARMONIZED')
+    .filterBounds(my_point)
+    .filterDate('2021-01-01', '2022-01-01')
+    .sort('CLOUDY_PIXEL_PERCENTAGE')
+    .first()
+    .select('B.*')
+)
 
-ndvi = image.normalizedDifference(["SR_B5", "SR_B4"]).rename("NDVI")
 
-# 顯示地圖
-Map = geemap.Map(center=[25.03, 121.56], zoom=10)
-Map.addLayer(ndvi, {"min": 0, "max": 1, "palette": ["white", "green"]}, "NDVI")
+vis_params = {'min':100, 'max': 3500, 'bands': ['B11',  'B8',  'B3']}
+
+training001 = my_image.sample(
+    **{
+        'region': my_image.geometry(),  # 若不指定，則預設為影像my_image的幾何範圍。
+        'scale': 30,
+        'numPixels': 10000,
+        'seed': 0,
+        'geometries': True,  # 設為False表示取樣輸出的點將忽略其幾何屬性(即所屬網格的中心點)，無法作為圖層顯示，可節省記憶體。
+    }
+)
+n_clusters = 11
+clusterer_wekaKMeans = ee.Clusterer.wekaKMeans().train(training001)
+result001 = my_image.cluster(clusterer_wekaKMeans)
+legend_dict = {
+     'A': '#10d22c',
+    'B': '#1c5f2c',
+    'C': '#ffff52',
+    'D': '#ffff52',
+    'E': '#ab6c28',
+    'F': '#0000ff',
+    'G': '#868686'
+}
+palette = list(legend_dict.values())
+vis_params_001 = {'min': 0, 'max': 4, 'palette': palette}
+
+Map = geemap.Map(center=[24.081653403304525, 120.5583462887228 ], zoom=9)
+left_layer = geemap.ee_tile_layer(image, vis_params, "Sentinel-2")
+right_layer = geemap.ee_tile_layer(result001, vis_params_001, "KMeans clustered land cover")
+Map.split_map(left_layer, right_layer)
+Map.add_legend(title='Land Cover Cluster (KMeans)', legend_dict=legend_dict, draggable=False, position='bottomright')
 Map.to_streamlit(height=600)
