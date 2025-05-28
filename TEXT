@@ -18,20 +18,20 @@ ee.Initialize(credentials)
 
 ###############################################
 st.set_page_config(layout="wide")
-st.title("🌍 22使用服務帳戶連接 GEE 的 Streamlit App")
+st.title("🌍 使用服務帳戶連接 GEE 的 Streamlit App")
 
 
 # 地理區域
-point = ee.Geometry.Point([120.5583462887228, 24.081653403304525])
+point = ee.Geometry.Point([120.282016,23.101488])
 
 # 擷取 Landsat 
 my_image = ee.ImageCollection('COPERNICUS/S2_HARMONIZED')\
     .filterBounds(point)\
-    .filterDate('2021-01-01', '2022-01-01')\
+    .filterDate('2024-01-01', '2024-12-31')\
     .sort('CLOUDY_PIXEL_PERCENTAGE')\
     .first()\
     .select('B.*')
-vis_params = {'min':100, 'max': 3500, 'bands': ['B11',  'B8',  'B3']}
+vis_params = {'min':100, 'max': 3500, 'bands': ['B4',  'B3',  'B2']}
 
 training001 = my_image.sample(
     **{
